@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import styles from '../styles/signup.module.css'; 
 
+import { toast } from "react-toastify"; // to add notifications
+import "react-toastify/dist/ReactToastify.css";
+
 
 function SignupForm() {
   const [step, setStep] = useState(1); // Track the registration step
@@ -28,7 +31,7 @@ function SignupForm() {
         setStep(2); // Move to the next step
       } else {
         // Display an error message or handle username unavailability
-        console.log('Username is not available.');
+        toast.error("Username take, try different!");
       }
     } else if (step === 2) {
       // Handle email and password submission
@@ -44,13 +47,21 @@ function SignupForm() {
           },
           body: JSON.stringify(formData),
         });
+
+        const data = await response.json();
+
   
         if (response.ok) {
           // Registration successful, you can redirect the user or show a success message
-          console.log('User registered successfully');
+          toast.success("User registered successfully");
         } else {
           // Registration failed, handle the error
-          console.error('User registration failed');
+          if (data.success === false) {
+            // Passwords do not match
+            toast.error(data.error);
+          } else {
+            console.error('User registration failed');
+          }
         }
       } catch (error) {
         console.error('Error during registration:', error);
@@ -59,8 +70,8 @@ function SignupForm() {
   };
 
   const checkUsernameAvailability = async (username) => {
-  
-    const response = await fetch(`http://localhost:8000/user/check-username/:username=${username}`);
+     
+    const response = await fetch(`http://localhost:8000/user/check-username?username=${username}`);
     const data = await response.json();
     return data.isAvailable; 
   };
@@ -104,6 +115,7 @@ function SignupForm() {
                 type="email"
                 name="email"
                 placeholder="Email"
+                required
                 onChange={handleInputChange}
                 className={styles.formInput}
               />
@@ -113,6 +125,7 @@ function SignupForm() {
                 type="text"
                 name="name"
                 placeholder="Name"
+                required
                 onChange={handleInputChange}
                 className={styles.formInput}
               />
@@ -122,6 +135,7 @@ function SignupForm() {
                 type="password"
                 name="password"
                 placeholder="Password"
+                required
                 onChange={handleInputChange}
                 className={styles.formInput}
               />
@@ -131,6 +145,7 @@ function SignupForm() {
                 type="password"
                 name="confirmPassword"
                 placeholder="Confirm Password"
+                required
                 onChange={handleInputChange}
                 className={styles.formInput}
               />
