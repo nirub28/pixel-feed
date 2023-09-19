@@ -74,7 +74,7 @@ function SigninForm(props) {
 // } catch (error) {
 //   console.error('Error during logout:', error);
 // }
-// };
+// }; 
 
 // return (
 // <button onClick={handleLogout}>Logout</button>

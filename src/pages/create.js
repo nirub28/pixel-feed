@@ -2,7 +2,7 @@ import React from 'react';
 import styles from "../styles/profile.module.css";
 
 
-const Home = ({ props }) => {
+const Create = ({ props }) => {
   return (
     <div  className={styles.profile}>
        <div className={styles.content}>
@@ -13,4 +13,4 @@ const Home = ({ props }) => {
   );
 };
 
-export default Home;
+export default Create;

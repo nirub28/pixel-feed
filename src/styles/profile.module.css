@@ -1,0 +1,63 @@
+.profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .userProfile {
+    text-align: center;
+  }
+  
+  .profilePicture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+  }
+  
+  .username {
+    font-size: 24px;
+    margin: 10px 0;
+  }
+  
+  .name {
+    font-size: 16px;
+    color: #666;
+  }
+  
+  .actionButtons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .followButton,
+  .messageButton {
+    margin: 0 10px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .userDetails {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .userStats {
+    display: inline-block;
+    margin: 0 10px;
+    font-size: 18px;
+  }
+  
+  .bio {
+    margin-top: 20px;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  
