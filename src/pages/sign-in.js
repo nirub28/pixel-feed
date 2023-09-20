@@ -1,14 +1,19 @@
 import React, { useState } from "react";
+import { useDispatch } from 'react-redux';
 import styles from "../styles/signin.module.css";
+import { login } from '../actions/index';
+
 
 import { toast } from "react-toastify"; // to add notifications
 import "react-toastify/dist/ReactToastify.css";
 
-function SigninForm(props) {
+function SigninForm() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+  const dispatch = useDispatch();
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +41,7 @@ function SigninForm(props) {
 
         const data = await response.json();
 
-        props.handleUserLogin(data.user);
+        dispatch(login(data.user));
 
         // Sign-in successful, you can redirect the user or show a success message
         // console.log("user", data.user);

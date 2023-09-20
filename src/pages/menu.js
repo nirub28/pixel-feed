@@ -2,7 +2,7 @@ import React from "react";
 import styles from "../styles/menu.module.css";
 import { Link } from "react-router-dom";
 
-const Menu = ({ props }) => {
+const Menu = ({ handleUserLogout }) => {
   return (
     <div className={styles.menu}>
       <div className={styles.sideDiv}>
@@ -45,10 +45,10 @@ const Menu = ({ props }) => {
             </Link>
           </li>
           <li className={styles.liTag}>
-            <Link to="/logout" className={styles.menuLink}>
+            <p className={styles.menuLink} onClick={handleUserLogout}>
               <img src="/logout.png" alt="logout" />
               Logout
-            </Link>
+            </p>
           </li>
         </ul>
       </div>
