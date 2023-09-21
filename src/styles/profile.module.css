@@ -60,4 +60,102 @@
     text-align: center;
   }
   
-  
+/* Styles for the popup container */
+.popupContainer {
+  position: fixed;
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Center the div precisely */
+  width: 300px;
+  height: 400px;
+  background-color: black; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; 
+  z-index: 1000; 
+  color: white;
+}
+
+.popupContainer .inDiv {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  width: 250px;
+  padding: 10px;
+}
+
+.popupContainer h2 {
+  font-size: 24px;
+  text-align: center;
+  margin: 0; /* Remove margin */
+}
+
+.popup .closeBtn {
+  background-color: gray;
+  color: white;
+  padding: 8px 16px; /* Adjust padding */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popupContainer hr {
+  border: 1px solid #ccc;
+  width: 100%; 
+  margin: 0;
+}
+
+.popupContainer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+
+.popupContainer ul li {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 80%;
+  margin: 0;
+  background-color: gray;
+  height: 30px;
+  margin-top: 5px;
+}
+
+.popupContainer ul li:hover {
+  background-color: lightgray;
+}
+
+.popupContainer ul li img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.popup ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.popup .closeBtn:hover {
+  background-color: lightgray;
+  color: black;
+}
+
+.divName {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.scrollableList {
+  max-height: 300px; 
+  overflow-y: auto; 
+}
