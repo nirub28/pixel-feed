@@ -8,7 +8,7 @@ const initialState = {
       case 'LOGIN':
         return {
           ...state,
-          user: action.payload,
+          user: action.payload, // Update user
         };
       case 'LOGOUT':
         return {
@@ -18,7 +18,11 @@ const initialState = {
         case 'UPDATE_USER': 
       return {
         ...state,
-        user: action.payload,
+        user: {
+          ...state.user,
+          bio: action.bio,
+          profilePicture: action.profilePicture,
+        },
       };
       default:
         return state;

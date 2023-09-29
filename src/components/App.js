@@ -7,6 +7,7 @@ import Menu from "../pages/menu";
 import Home from "../pages/home";
 import Create from "../pages/create";
 import UserProfile from "../pages/userprofile";
+import SearchComponent from "../pages/search";
 import Profile from "../pages/profile";
 import {Route, Routes,useLocation} from 'react-router-dom';
 import styles from "../styles/app.module.css";
@@ -85,6 +86,7 @@ const App = () => {
           <Route path="/profile" element={<Profile  user={user} />} />
           {/* <Route path="/notifications" element={<Notifications />} /> */}
           <Route path="/create" element={<Create />} />
+          <Route path="/search" element={<SearchComponent />} />
           {/* <Route path="/wishlist" element={<Wishlist />} /> */}
           <Route
             path="/signin"

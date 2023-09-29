@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import styles from '../styles/signup.module.css'; 
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
+
+
 
 import { toast } from "react-toastify"; // to add notifications
 import "react-toastify/dist/ReactToastify.css";
@@ -14,6 +18,14 @@ function SignupForm() {
     password: '',
     confirmPassword: '',
   });
+
+  const user = useSelector((state) => state.user.user);
+
+   // Check if the user is already logged in
+   if (user) {
+    // User is already authenticated, redirect to a specific page (e.g., profile)
+    return <Navigate to="/profile" />;
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

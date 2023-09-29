@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import styles from "../styles/profile.module.css";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 
 const UserProfile = () => {
   const user = useSelector((state) => state.user.user); // Your user data from the store
-  const dispatch = useDispatch();
   const [otherUser, setOtherUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersList, setFollowersList] = useState([]);
@@ -13,6 +12,8 @@ const UserProfile = () => {
   const [showFollowersPopup, setShowFollowersPopup] = useState(false);
   const [showFollowingPopup, setShowFollowingPopup] = useState(false);
   const { userid } = useParams();
+
+  // console.log("user id:",user._id);
 
   // Function to check if the current user is following the other user
   const checkIfFollowing = async () => {
@@ -56,12 +57,15 @@ const UserProfile = () => {
 
       if (response.ok) {
         // Update the user data in the Redux store with the updated user details
-        const updatedUserData = await response.json();
-        dispatch({ type: "UPDATE_USER_DATA", payload: updatedUserData });
+        // const / = await response.json();
         setIsFollowing(true);
 
+              // Fetch the updated follower and following counts
+              fetchFollowerAndFollowingCounts(userid);
+
+
         // Add the followed user to the followersList
-        setFollowersList([...followersList, userIdToFollow]);
+        // setFollowersList([...followersList, userIdToFollow]);
       } else {
         // Handle the case where the API call fails
         console.error("Failed to follow user:", response.status);
@@ -88,15 +92,16 @@ const UserProfile = () => {
 
       if (response.ok) {
         // Update the user data in the Redux store with the updated user details
-        const updatedUserData = await response.json();
-        dispatch({ type: "UPDATE_USER_DATA", payload: updatedUserData });
+        // const updatedUserData = await response.json();
         setIsFollowing(false);
+        // Fetch the updated follower and following counts
+         fetchFollowerAndFollowingCounts(userid);
 
         // Remove the unfollowed user from the followersList
-        const updatedFollowersList = followersList.filter(
-          (followerId) => followerId !== userIdToUnfollow
-        );
-        setFollowersList(updatedFollowersList);
+        // const updatedFollowersList = followersList.filter(
+        //   (followerId) => followerId !== userIdToUnfollow
+        // );
+        // setFollowersList(updatedFollowersList);
       } else {
         // Handle the case where the API call fails
         console.error("Failed to unfollow user:", response.status);
@@ -106,6 +111,43 @@ const UserProfile = () => {
       console.error("Network error:", error);
     }
   };
+
+
+  const fetchFollowerAndFollowingCounts = async (userId) => {
+    try {
+      // Fetch the updated follower and following counts
+      const [followersResponse, followingResponse] = await Promise.all([
+        fetch(`http://localhost:8000/user/followers/${userId}`),
+        fetch(`http://localhost:8000/user/following/${userId}`),
+      ]);
+  
+      if (followersResponse.ok) {
+        const followersData = await followersResponse.json();
+        setFollowersList(followersData.followers);
+      } else {
+        // Handle error
+        console.error("Error fetching followers");
+      }
+  
+      if (followingResponse.ok) {
+        const followingData = await followingResponse.json();
+        setFollowingList(followingData.following);
+      } else {
+        // Handle error
+        console.error("Error fetching following");
+      }
+    } catch (error) {
+      // Handle network error
+      console.error("Network error:", error);
+    }
+  };
+  
+  
+  
+  
+  
+  
+  
 
   const sendMessage = (userIdToSendMessage) => {
     // Define your sendMessage logic here
@@ -267,13 +309,13 @@ const UserProfile = () => {
                   />
                   <div className={styles.divName}>
                   {user.id === follower._id ? (
-                      <Link to="/profile"> {follower.username}</Link>
+                      <Link to="/profile"> {follower.username} <div>{follower.name}</div></Link>
                     ) : (
                       <Link to={`/user/profile/${follower._id}`}>
-                        {follower.username}
+                        {follower.username} <div>{follower.name}</div>
                       </Link>
                     )}
-                    <span>{follower.name}</span>
+                   
                   </div>
                 </li>
               ))}
@@ -307,13 +349,13 @@ const UserProfile = () => {
                   />
                   <div className={styles.divName}>
                     {user.id === following._id ? (
-                      <Link to="/profile"> {following.username}</Link>
+                      <Link to="/profile"> {following.username}<div>{following.name}</div></Link>
                     ) : (
                       <Link to={`/user/profile/${following._id}`}>
-                        {following.username}
+                        {following.username}<div>{following.name}</div>
                       </Link>
                     )}
-                    <span>{following.name}</span>
+                    
                   </div>
                 </li>
               ))}

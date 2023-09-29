@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from "../styles/signin.module.css";
 import { login } from '../actions/index';
+import { Navigate } from 'react-router-dom';
+
 
 
 import { toast } from "react-toastify"; // to add notifications
@@ -13,6 +15,17 @@ function SigninForm() {
     password: "",
   });
   const dispatch = useDispatch();
+  
+  const user = useSelector((state) => state.user.user);
+
+
+
+
+  // Check if the user is already logged in
+  if (user) {
+    // User is already authenticated, redirect to a specific page (e.g., profile)
+    return <Navigate to="/profile" />;
+  }
 
 
   const handleInputChange = (e) => {
@@ -41,10 +54,10 @@ function SigninForm() {
 
         const data = await response.json();
 
+          // Dispatch both user and token
         dispatch(login(data.user));
 
-        // Sign-in successful, you can redirect the user or show a success message
-        // console.log("user", data.user);
+        // Sign-in successful,redirect the user or show a success message
         toast.success("User signed in successfully");
       } else {
         // Sign-in failed, handle the error
@@ -55,36 +68,6 @@ function SigninForm() {
     }
   };
 
-
-
-
-//   const handleLogout = async () => {
-//     try {
-//       // Make an HTTP POST request to the logout URL
-//       const response = await fetch('http://localhost:8000/api/logout', {
-//         method: 'POST',
-//         credentials: 'include', // Include cookies in the request
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//       });
-
-//       if (response.ok) {
-//     // Logout successful, you can redirect the user or show a message
-//     console.log('User logged out successfully');
-//   } else {
-//     // Logout failed, handle the error
-//     console.error('Logout failed');
-//   }
-// } catch (error) {
-//   console.error('Error during logout:', error);
-// }
-// }; 
-
-// return (
-// <button onClick={handleLogout}>Logout</button>
-// );
-// }
 
   return (
     <div className={styles.formDiv}>

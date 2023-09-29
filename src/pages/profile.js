@@ -5,52 +5,30 @@ import { Link } from "react-router-dom";
 import { updateUser } from '../actions/index';
 
 
+
 const Profile = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
   const hasProfilePicture = user && user.profilePicture;
-  const [followersList, setFollowersList] = useState([]);
-  const [followingList, setFollowingList] = useState([]);
   const [showFollowersPopup, setShowFollowersPopup] = useState(false);
   const [showFollowingPopup, setShowFollowingPopup] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false); //showProfileEdit state
+  const [followersListDetails, setFollowersList] = useState([]);
+  const [followingListDetails, setFollowingList] = useState([]);
+
+  const [image, setImage] = useState('');
+
 
   // State variables for profile edit form
   const [profilePicture, setProfilePicture] = useState(
     user.profilePicture || ""
   );
+
+  console.log("user:", user);
+
   const [bio, setBio] = useState(user.bio || "");
-
-
-
-  // Function to fetch followers and following data for the logged-in user
-  const fetchFollowersAndFollowing = async () => {
-    try {
-      // Replace with actual API calls to fetch followers and following lists
-      // For example:
-      const followersResponse = await fetch(
-        `http://localhost:8000/user/followers/${user.id}`
-      );
-      const followingResponse = await fetch(
-        `http://localhost:8000/user/following/${user.id}`
-      );
-
-      if (followersResponse.ok && followingResponse.ok) {
-        const followersData = await followersResponse.json();
-        const followingData = await followingResponse.json();
-        setFollowersList(followersData.followers);
-        setFollowingList(followingData.following);
-      } else {
-        console.error("Failed to fetch followers and following");
-      }
-    } catch (error) {
-      console.error("Error fetching followers and following:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchFollowersAndFollowing();
-  });
+  const followersList = user.followers || [];
+  const followingList = user.following || [];
 
   const openFollowersPopup = () => {
     setShowFollowersPopup(true);
@@ -78,9 +56,35 @@ const Profile = () => {
     setShowProfileEdit(false);
   };
 
-  const handleFileInputChange = (e) => {
-    e.stopPropagation(); 
-    setProfilePicture(e.target.files[0]); 
+  function converToBase64 (e){
+    var reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload=()=>{
+      setImage(reader.result);
+    }
+    reader.onerror = error =>{
+      console.log("error", error);
+    }
+  }
+
+
+  //get user details fo followers and following
+  const fetchUserById = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/user/profile/${userId}`);
+      if (response.ok) {
+        const userData = await response.json();
+        return userData;
+      } else {
+        // Handle error
+        console.error("Error fetching user profile");
+        return null;
+      }
+    } catch (error) {
+      // Handle network error
+      console.error("Network error:", error);
+      return null;
+    }
   };
   
 
@@ -89,12 +93,15 @@ const Profile = () => {
     try {
       const formData = new FormData();
       if (profilePicture) {
-        formData.append('profilePicture', profilePicture);
+        // Append the image (base64 string) to the form data with the key 'profilePicture'
+        formData.append('profilePicture', image);
       }
       if (bio) {
+        // Append the bio to the form data with the key 'bio'
         formData.append('bio', bio);
       }
   
+      // Send the form data to the backend
       const response = await fetch(
         `http://localhost:8000/user/update-profile/${user.id}`,
         {
@@ -106,7 +113,10 @@ const Profile = () => {
       if (response.ok) {
         // Handle successful update
         const updatedUserData = await response.json();
-        dispatch(updateUser(updatedUserData.user));
+  
+        // Dispatch only the profilePicture and bio to the reducer
+        dispatch(updateUser(updatedUserData.user.profilePicture, updatedUserData.user.bio));
+  
         setShowProfileEdit(false);
       } else {
         // Handle the case where the API call fails
@@ -119,12 +129,57 @@ const Profile = () => {
   };
   
 
+
+
+
+// Function to fetch and update follower and following details
+const fetchFollowerDetails = async () => {
+  const followerDetails = [];
+  for (const followerId of followersList) {
+    const user = await fetchUserById(followerId);
+    if (user) {
+      followerDetails.push(user);
+    }
+  }
+  setFollowersList(followerDetails);
+};
+
+const fetchFollowingDetails = async () => {
+  const followingDetails = [];
+  for (const followingId of followingList) {
+    const user = await fetchUserById(followingId);
+    if (user) {
+      followingDetails.push(user);
+    }
+  }
+  setFollowingList(followingDetails);
+};
+
+// Call these functions to fetch follower and following details 
+useEffect(() => {
+  fetchFollowerDetails();
+  fetchFollowingDetails();
+}, []);
+
+
+///  || "https://img.icons8.com/fluency/48/test-account.png"
+
+console.log("image is:", user.profilePictureToShow.toString("base64"));
+
+
+  
+
   return (
     <div className={styles.profile}>
       <div className={styles.userProfile}>
-        {hasProfilePicture ? (
+      <img
+     src="https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=600"
+  alt={user?.username}
+  className={styles.profilePicture}
+/>
+        {/* {hasProfilePicture ? (
           <img
-            src={user?.profilePicture || "https://img.icons8.com/fluency/48/test-account.png"}
+            src={`data:image/jpeg;base64,${user.profilePictureToShow.toString("base64")}`}
             alt={user?.username}
             className={styles.profilePicture}
           />
@@ -134,7 +189,7 @@ const Profile = () => {
             alt="Default"
             className={styles.profilePicture}
           />
-        )}
+        )} */}
         <h1 className={styles.username}>{user.username}</h1>
         <p  className={styles.name}>{user.name}</p>
         {/* Render "Edit Profile" button for your own profile */}
@@ -177,7 +232,7 @@ const Profile = () => {
             </div>
             <hr />
             <ul className={styles.scrollableList}>
-              {followersList.map((follower) => (
+              {followersListDetails.map((follower) => (
                 <li key={follower._id}>
                   <img
                     src={
@@ -187,10 +242,14 @@ const Profile = () => {
                     alt={follower.username}
                   />
                   <div className={styles.divName}>
-                    <Link to={`/user/profile/${follower._id}`}>
-                      {follower.username}
-                    </Link>
-                    <span>{follower.name}</span>
+                  {user.id === follower._id ? (
+                      <Link to="/profile"> {follower.username}<div>{follower.name}</div></Link>
+                    ) : (
+                      <Link to={`/user/profile/${follower._id}`}>
+                        {follower.username}<div>{follower.name}</div>
+                      </Link>
+                    )}
+                    
                   </div>
                 </li>
               ))}
@@ -212,7 +271,7 @@ const Profile = () => {
             </div>
             <hr />
             <ul className={styles.scrollableList}>
-              {followingList.map((following) => (
+              {followingListDetails.map((following) => (
                 <li key={following._id}>
                   <img
                     src={
@@ -222,10 +281,15 @@ const Profile = () => {
                     alt={following.username}
                   />
                   <div className={styles.divName}>
-                    <Link to={`/user/profile/${following._id}`}>
-                      {following.username}
-                    </Link>
-                    <span>{following.name}</span>
+                  {user.id === following._id ? (
+                      <Link to="/profile"> {following.username}<div>{following.name}</div></Link>
+                    ) : (
+                      <Link to={`/user/profile/${following._id}`}>
+                        {following.username}
+                        <div>{following.name}</div>
+                      </Link>
+                    )}
+                    
                   </div>
                 </li>
               ))}
@@ -247,14 +311,17 @@ const Profile = () => {
               </div>
             </div>
             <hr />
-            <div className={styles.profileEditForm}>
+            <form className={styles.profileEditForm}> 
               <label htmlFor="profilePicture">Profile Picture:</label>
               <input
                 type="file"
                 id="profilePicture"
                 accept="image/*" // to Specify that only image files are allowed
-                  onChange={handleFileInputChange} 
+                  // onChange={handleFileInputChange} 
+                 onChange={converToBase64} 
               />
+              {image==''|| image==null?"": <img width={100} height={100} src={image} />}
+              
               <label htmlFor="bio">Bio:</label>
               <textarea
                 id="bio"
@@ -267,7 +334,7 @@ const Profile = () => {
               >
                 Save
               </button>
-            </div>
+            </form>
           </div>
         </div>
       )}
