@@ -159,3 +159,71 @@
   max-height: 300px; 
   overflow-y: auto; 
 }
+
+.hrDiv {
+  text-align: center; 
+  width:1000px;
+}
+
+.hrLine {
+  border: none;
+  border-top: 3px solid #d12020;
+  width: 100%;
+  margin: 0 auto; 
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.postsImg{
+  width: 30px;
+  height: 30px;
+  position: relative;
+}
+
+.postsImg b{
+  position: absolute;
+}
+
+.postsContainer {
+  display: flex;
+  align-items: center; 
+}
+
+.postsContainer:hover{
+  cursor: pointer;
+}
+
+.postsImg {
+  width: 30px;
+  height: 30px;
+}
+
+.postsText {
+  margin-left: 8px; 
+}
+
+
+.postsList {
+  display: flex;
+  flex-wrap: wrap; /* Allow posts to wrap to the next line if there's not enough space */
+  justify-content: center; /* Center posts horizontally */
+  gap: 20px; /* Adjust the gap between posts as needed */
+  margin-top: 30px;
+}
+
+.postItem {
+  max-width: 280px; /* Adjust the maximum width of each post item as needed */
+  border: 1px solid #ccc;
+  padding: 5px;
+  text-align: center;
+  background-color: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.postImage {
+  width: 100%;
+  max-height: 300px; /* Adjust the maximum height of the image as needed */
+  object-fit: cover; /* Maintain aspect ratio while covering the container */
+  border-radius: 10px;
+}
+

@@ -12,10 +12,10 @@ export const login = (user) => {
     };
   };
   
-  export const updateUser = (profilePicture, bio) => {
+  export const updateUser = (profilepic, bio) => {
     return {
       type: 'UPDATE_USER',
-      profilePicture,
+      profilepic,
       bio,
     };
   };

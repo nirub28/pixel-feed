@@ -4,24 +4,28 @@ import styles from "../styles/profile.module.css";
 import { Link } from "react-router-dom";
 import { updateUser } from "../actions/index";
 
+import ImagePopup from "./imagepop";
+
 const Profile = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
-  const hasProfilePicture = user && user.profilePicture;
+  // const hasProfilePicture = user && user.profilePicture;
   const [showFollowersPopup, setShowFollowersPopup] = useState(false);
   const [showFollowingPopup, setShowFollowingPopup] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false); //showProfileEdit state
   const [followersListDetails, setFollowersList] = useState([]);
   const [followingListDetails, setFollowingList] = useState([]);
+  const [postList, setPostList] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const [image, setImage] = useState("");
+
+  // console.log("selectedImage", selectedImage);
 
   // State variables for profile edit form
   const [profilePicture, setProfilePicture] = useState(
     user.profilePicture || ""
   );
-
-  console.log("user:", user);
 
   const [bio, setBio] = useState(user.bio || "");
   const followersList = user.followers || [];
@@ -70,6 +74,28 @@ const Profile = () => {
     };
   }
 
+  // get posts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/post/${user.id}/posts`
+        );
+        if (response.ok) {
+          const postsData = await response.json();
+          // console.log("posts list", postsData);
+          setPostList(postsData);
+        } else {
+          console.error("Error fetching posts");
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+      }
+    };
+
+    fetchPosts();
+  }, [user.id]);
+
   //get user details fo followers and following
   const fetchUserById = async (userId) => {
     try {
@@ -92,7 +118,8 @@ const Profile = () => {
   };
 
   // Function to handle profile update form submission
-  const handleProfileUpdate = async () => {
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
     try {
       const formData = new FormData();
       if (profilePicture) {
@@ -108,29 +135,18 @@ const Profile = () => {
       const response = await fetch(
         `http://localhost:8000/user/update-profile/${user.id}`,
         {
-          method: 'POST',
+          method: "POST",
           body: formData,
         }
       );
 
       if (response.ok) {
-        // Handle successful update
         const updatedUserData = await response.json();
 
-        console.log("updated data is :",updatedUserData );
-
-        // Dispatch only the profilePicture and bio to the reducer
-        dispatch(
-          updateUser(
-            updatedUserData.user.profilePicture,
-            updatedUserData.user.bio
-          )
-        );
+        // Dispatch the updated data to the reducer or use it as needed
+        dispatch(updateUser(updatedUserData.profilepic, updatedUserData.bio));
 
         setShowProfileEdit(false);
-      } else {
-        // Handle the case where the API call fails
-        console.error("Failed to update profile:", response.status);
       }
     } catch (error) {
       // Handle network error
@@ -167,14 +183,10 @@ const Profile = () => {
     fetchFollowingDetails();
   }, []);
 
-  ///  || "https://img.icons8.com/fluency/48/test-account.png"
-
-  // console.log("image is:", user.profilePictureToShow.toString("base64"));
-
   return (
     <div className={styles.profile}>
       <div className={styles.userProfile}>
-      {user.profilePicture ? ( // Check if profile picture URL exists
+        {user.profilePicture ? ( // Check if profile picture URL exists
           <img
             src={user.profilePicture} // Use the profile picture URL
             alt={user?.username}
@@ -197,7 +209,7 @@ const Profile = () => {
       <div className={styles.userDetails}>
         <p className={styles.userStats}>
           <span>
-            <b>{user.posts}</b>
+            <b>{postList.length}</b>
           </span>{" "}
           posts
         </p>
@@ -233,7 +245,7 @@ const Profile = () => {
                 <li key={follower._id}>
                   <img
                     src={
-                      follower.profilePicture ||
+                      follower.profilepic ||
                       "https://img.icons8.com/fluency/48/test-account.png"
                     }
                     alt={follower.username}
@@ -276,7 +288,7 @@ const Profile = () => {
                 <li key={following._id}>
                   <img
                     src={
-                      following.profilePicture ||
+                      following.profilepic ||
                       "https://img.icons8.com/fluency/48/test-account.png"
                     }
                     alt={following.username}
@@ -317,7 +329,7 @@ const Profile = () => {
             <hr />
             <form
               className={styles.profileEditForm}
-              enctype="multipart/form-data"
+              encType="multipart/form-data"
             >
               <label htmlFor="profilePicture">Profile Picture:</label>
               <input
@@ -340,6 +352,7 @@ const Profile = () => {
                 onChange={(e) => setBio(e.target.value)}
               />
               <button
+                type="button"
                 className={styles.saveProfileButton}
                 onClick={handleProfileUpdate}
               >
@@ -348,6 +361,42 @@ const Profile = () => {
             </form>
           </div>
         </div>
+      )}
+
+      <div className={styles.hrDiv}>
+        <hr className={styles.hrLine} />
+      </div>
+      <div className={styles.postsContainer}>
+        <img
+          className={styles.postsImg}
+          src="https://cdn-icons-png.flaticon.com/256/11710/11710467.png"
+          alt="posts"
+        ></img>
+        <b className={styles.postsText}>POSTS</b>{" "}
+      </div>
+
+      <div className={styles.postsList}>
+        {postList.map((post, index) => (
+          <div 
+            key={index}
+            className={styles.postItem}
+            onClick={() => setSelectedImage(post._id)}
+          >
+            {/* <b>{post._id}</b> */}
+            <img
+              src={post.image}
+              alt={`Post ${index}`}
+              className={styles.postImage}
+            />
+          </div>
+        ))}
+      </div>
+
+      {selectedImage !== null && (
+        <ImagePopup
+          imageId={selectedImage} 
+          onClose={() => setSelectedImage(null)}
+        />
       )}
     </div>
   );

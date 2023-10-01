@@ -218,14 +218,15 @@ const UserProfile = () => {
     return <div>Loading...</div>; // You can add a loading state or error handling
   }
 
-  const hasProfilePicture = otherUser.profilePicture;
+  // console.log("other user is", otherUser );
+
 
   return (
     <div className={styles.profile}>
       <div className={styles.userProfile}>
-        {hasProfilePicture ? (
+        {otherUser.profilepic ? (
           <img
-            src={otherUser.profilePicture}
+            src={otherUser.profilepic}
             alt={otherUser.username}
             className={styles.profilePicture}
           />
@@ -302,7 +303,7 @@ const UserProfile = () => {
                 <li key={follower._id}>
                   <img
                     src={
-                      follower.profilePicture ||
+                      follower.profilepic ||
                       "https://img.icons8.com/fluency/48/test-account.png"
                     }
                     alt={follower.username}
@@ -342,7 +343,7 @@ const UserProfile = () => {
                 <li key={following._id}>
                   <img
                     src={
-                      following.profilePicture ||
+                      following.profilepic ||
                       "https://img.icons8.com/fluency/48/test-account.png"
                     }
                     alt={following.username}

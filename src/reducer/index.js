@@ -21,7 +21,7 @@ const initialState = {
         user: {
           ...state.user,
           bio: action.bio,
-          profilePicture: action.profilePicture,
+          profilePicture: action.profilepic,
         },
       };
       default:
