@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styles from "../styles/profile.module.css";
 import { useParams, Link, Navigate } from "react-router-dom";
+import ImagePopup from "./imagepop";
+
 
 const UserProfile = () => {
   const user = useSelector((state) => state.user.user); // Your user data from the store
@@ -11,6 +13,10 @@ const UserProfile = () => {
   const [followingList, setFollowingList] = useState([]);
   const [showFollowersPopup, setShowFollowersPopup] = useState(false);
   const [showFollowingPopup, setShowFollowingPopup] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [postList, setPostList] = useState([]);
+
+
   const { userid } = useParams();
 
   // console.log("user id:",user._id);
@@ -143,7 +149,27 @@ const UserProfile = () => {
   };
   
   
+    // get posts
+    useEffect(() => {
+      const fetchPosts = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:8000/post/${userid}/posts`
+          );
+          if (response.ok) {
+            const postsData = await response.json();
+            // console.log("posts list", postsData);
+            setPostList(postsData);
+          } else {
+            console.error("Error fetching posts");
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+        }
+      };
   
+      fetchPosts();
+    }, [user.id]);
   
   
   
@@ -266,7 +292,7 @@ const UserProfile = () => {
       <div className={styles.userDetails}>
         <p className={styles.userStats}>
           <span>
-            <b>{otherUser.posts.length}</b>
+            <b>{postList.length}</b>
           </span>{" "}
           posts
         </p>
@@ -363,6 +389,43 @@ const UserProfile = () => {
             </ul>
           </div>
         </div>
+      )}
+
+      <div className={styles.hrDiv}>
+        <hr className={styles.hrLine} />
+      </div>
+      <div className={styles.postsContainer}>
+        <img
+          className={styles.postsImg}
+          src="https://cdn-icons-png.flaticon.com/256/11710/11710467.png"
+          alt="posts"
+        ></img>
+        <b className={styles.postsText}>POSTS</b>{" "}
+      </div>
+
+      <div className={styles.postsList}>
+        {postList.map((post, index) => (
+          <div 
+            key={index}
+            className={styles.postItem}
+            onClick={() => setSelectedImage(post._id)}
+          >
+            {/* <b>{post._id}</b> */}
+            <img
+              src={post.image}
+              alt={`Post ${index}`}
+              className={styles.postImage}
+            />
+          </div>
+        ))}
+      </div>
+
+
+       {selectedImage !== null && (
+        <ImagePopup
+          imageId={selectedImage} 
+          onClose={() => setSelectedImage(null)}
+        />
       )}
     </div>
   );

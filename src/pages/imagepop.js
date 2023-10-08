@@ -257,7 +257,7 @@ const ImagePopup = ({ imageId, onClose }) => {
                     <div className={styles.commentUser}>
                       <img
                         src={
-                          comment.profilepic || "default-profile-pic-url.jpg"
+                          comment.profilepic || "https://img.icons8.com/fluency/48/test-account.png"
                         }
                         alt="User Profile"
                         className={styles.commentUserProfilePic}
