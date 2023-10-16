@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styles from "../styles/profile.module.css";
-import { useParams, Link, Navigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import ImagePopup from "./imagepop";
 
 
@@ -247,6 +247,13 @@ const UserProfile = () => {
   // console.log("other user is", otherUser );
 
 
+  const handleSendMessage = (userId) => {
+    // Navigate to the messaging route with the recipient's user ID = 
+    window.location.href = `/messages/${userId}`;
+  };
+
+
+
   return (
     <div className={styles.profile}>
       <div className={styles.userProfile}>
@@ -281,12 +288,8 @@ const UserProfile = () => {
               Follow
             </button>
           )}
-          <button
-            className={styles.messageButton}
-            onClick={() => sendMessage(otherUser.id)}
-          >
-            Message
-          </button>
+               <button onClick={() => handleSendMessage(userid)}>Message</button>
+
         </div>
       </div>
       <div className={styles.userDetails}>

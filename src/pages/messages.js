@@ -1,72 +1,133 @@
-// Message.js
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import styles from "../styles/messages.module.css";
 
-import React, { useState } from 'react';
+const Message = () => {
+  const user = useSelector((state) => state.user.user);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [newMessage, setNewMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const dispatch = useDispatch();
+  const { userId } = useParams();
 
-const Message = ({ messages }) => {
-  const [selectedConversation, setSelectedConversation] = useState(null);
-  const [newMessage, setNewMessage] = useState('');
+  useEffect(() => {
+    fetchUserDetails(userId);
+    fetchMessages(user.id, userId); // Pass both sender and receiver IDs
+  }, []);
 
-  const handleConversationClick = (conversation) => {
-    setSelectedConversation(conversation);
-  };
+  const fetchUserDetails = async (userId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/user/profile/${userId}`
+      );
 
-
-  const handleSendMessage = () => {
-    if (newMessage.trim() !== '') {
-      // You can send the new message to the selected conversation
-      // For example, by making an API request to your server
-      // Then update the conversation's messages
-      const updatedConversation = {
-        ...selectedConversation,
-        messages: [...selectedConversation.messages, newMessage],
-      };
-
-      // Update the conversation in your state or server
-      // For example, you can use Redux to manage state
-      // dispatch(updateConversation(updatedConversation));
-
-      // Clear the new message input
-      setNewMessage('');
+      if (response.ok) {
+        const userData = await response.json();
+        setSelectedUser(userData);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
     }
   };
 
-//   return (
-//     <div className="message-container">
-//       <div className="conversation-list">
-//         {messages.map((conversation, index) => (
-//           <div
-//             key={index}
-//             className={`conversation ${selectedConversation === conversation ? 'selected' : ''}`}
-//             onClick={() => handleConversationClick(conversation)}
-//           >
-//             {conversation.user} {/* Display the user's name or conversation details */}
-//           </div>
-//         ))}
-//       </div>
-//       <div className="chat-box">
-//         {selectedConversation && (
-//           <div className="selected-conversation">
-//             <div className="messages">
-//               {selectedConversation.messages.map((message, index) => (
-//                 <div key={index} className="message">
-//                   {message}
-//                 </div>
-//               ))}
-//             </div>
-//             <div className="message-input">
-//               <input
-//                 type="text"
-//                 placeholder="Type your message..."
-//                 value={newMessage}
-//                 onChange={(e) => setNewMessage(e.target.value)}
-//               />
-//               <button onClick={handleSendMessage}>Send</button>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
+  const fetchMessages = async (sender, receiver) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/message/get-messages?sender=${sender}&receiver=${receiver}`
+      );
+      if (response.ok) {
+        const messageData = await response.json();
+        setMessages(messageData);
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  const handleSendMessage = () => {
+    if (newMessage.trim() !== "") {
+      // Make an API call to send the message
+      const messageData = {
+        sender: user.id,
+        receiver: userId,
+        content: newMessage,
+      };
+
+      fetch("http://localhost:8000/message/send-message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(messageData),
+      })
+        .then((response) => {
+          if (response.ok) {
+            // Message sent successfully, you can update the conversation's messages
+            setMessages([...messages, messageData]);
+
+            // Clear the new message input
+            setNewMessage("");
+          } else {
+            console.error("Error sending message");
+          }
+        })
+        .catch((error) => {
+          console.error("Error sending message:", error);
+        });
+    }
+  };
+
+  return (
+    <div className={styles.messageContainer}>
+      <div className={styles.conversationList}>
+        <p>{user.username}</p>
+        <hr />
+        <p>Messages</p>
+        <hr />
+      </div>
+      <div className={styles.chatBox}>
+        <div className={styles.selectedUser}>
+          {selectedUser && <p>{selectedUser.username}</p>}
+        </div>
+        <div className={styles.chatContent}>
+          <div className={styles.messages}>
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`${styles.message} ${
+                  message.sender === user.id
+                    ? styles.sentMessage
+                    : styles.receivedMessage
+                }`}
+              >
+                {message.content}
+                <span className={styles.timestamp}>
+                  {new Date(message.timestamp).toLocaleString([], {
+                    year: "numeric",
+                    month: "numeric",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.messageInput}>
+          <input
+            type="text"
+            placeholder="Type your message..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <button onClick={handleSendMessage}>Send</button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Message;

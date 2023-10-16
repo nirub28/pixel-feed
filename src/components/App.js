@@ -89,6 +89,7 @@ const App = () => {
           <Route path="/create" element={<CreatePost />} />
           <Route path="/search" element={<SearchComponent />} />
           <Route path="/messages" element={<Message />} />
+          <Route path="/messages/:userId" element={<Message />} />
           <Route
             path="/signin"
             element={<SigninForm />}
