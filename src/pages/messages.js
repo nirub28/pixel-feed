@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
+import io from 'socket.io-client';
 import styles from "../styles/messages.module.css";
+
+const socket = io('http://localhost:8000');
+
 
 const Message = () => {
   const user = useSelector((state) => state.user.user);
@@ -14,7 +18,18 @@ const Message = () => {
   useEffect(() => {
     fetchUserDetails(userId);
     fetchMessages(user.id, userId); // Pass both sender and receiver IDs
-  }, []);
+
+        // Listen for new messages
+        socket.on('newMessage', (updatedMessages) => {
+          setMessages(updatedMessages);
+        });
+    
+        return () => {
+          // Cleanup on component unmount
+          socket.disconnect();
+        };
+    
+  }, [userId]);
 
   const fetchUserDetails = async (userId) => {
     try {
@@ -64,10 +79,14 @@ const Message = () => {
         .then((response) => {
           if (response.ok) {
             // Message sent successfully, you can update the conversation's messages
-            setMessages([...messages, messageData]);
+            setMessages((prevMessages) => [...prevMessages, messageData]);
 
             // Clear the new message input
             setNewMessage("");
+               
+             
+            // Emit Socket.IO event to notify the server about the new message
+            io.emit('newMessage', messageData);
           } else {
             console.error("Error sending message");
           }

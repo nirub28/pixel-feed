@@ -33,11 +33,9 @@ const App = () => {
     try {
       // Make an API call to destroy the session on the backend
       const response = await fetch("http://localhost:8000/user/logout", {
-        method: "GET", // You can use the appropriate HTTP method
+        method: "GET",
         headers: {
-          // Add any headers required for your API call
           "Content-Type": "application/json",
-          // Add any authorization headers if needed
           // "Authorization": `Bearer ${accessToken}`,
         },
       });
