@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import io from 'socket.io-client';
-import styles from "../styles/messages.module.css";
+// import io from 'socket.io-client';
+import styles from "../styles/messagenotList.module.css";
 
-const socket = io('http://localhost:8000');
+// const socket = io('http://localhost:8000');
 
 
 const Message = () => {
@@ -13,43 +13,51 @@ const Message = () => {
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const dispatch = useDispatch();
-  const { userId } = useParams();
+  const { conversationId } = useParams(); 
 
-  useEffect(() => {
-    fetchUserDetails(userId);
-    fetchMessages(user.id, userId); // Pass both sender and receiver IDs
+const userId=user.id;
 
-        // Listen for new messages
-        socket.on('newMessage', (updatedMessages) => {
-          setMessages(updatedMessages);
-        });
-    
-        return () => {
-          // Cleanup on component unmount
-          socket.disconnect();
-        };
-    
-  }, [userId]);
+useEffect(() => {
+  const fetchConversationData = async () => {
+      // Fetch conversation details based on conversationId
+      await fetchConversationDetails(conversationId, userId);
+      // Fetch messages for the conversation
+      await fetchMessages(conversationId);
 
-  const fetchUserDetails = async (userId) => {
+  };
+
+  fetchConversationData();
+}, [conversationId, userId]);
+
+
+
+
+  const fetchConversationDetails = async (conversationId,userId) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/user/profile/${userId}`
+        `http://localhost:8000/message/conversation-details/${conversationId}?userId=${userId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       );
 
       if (response.ok) {
-        const userData = await response.json();
-        setSelectedUser(userData);
+        const conversationData = await response.json();
+        setSelectedUser(conversationData.otherUser);
       }
     } catch (error) {
-      console.error("Error fetching user details:", error);
+      console.error("Error fetching conversation details:", error);
     }
   };
 
-  const fetchMessages = async (sender, receiver) => {
+  const fetchMessages = async (conversationId) => {
+
     try {
       const response = await fetch(
-        `http://localhost:8000/message/get-messages?sender=${sender}&receiver=${receiver}`
+        `http://localhost:8000/message/get-messages/${conversationId}`
       );
       if (response.ok) {
         const messageData = await response.json();
@@ -60,12 +68,15 @@ const Message = () => {
     }
   };
 
+
+ 
+
   const handleSendMessage = () => {
     if (newMessage.trim() !== "") {
       // Make an API call to send the message
       const messageData = {
         sender: user.id,
-        receiver: userId,
+        room: conversationId,
         content: newMessage,
       };
 
@@ -86,7 +97,7 @@ const Message = () => {
                
              
             // Emit Socket.IO event to notify the server about the new message
-            io.emit('newMessage', messageData);
+            // io.emit('newMessage', messageData);
           } else {
             console.error("Error sending message");
           }
@@ -106,9 +117,29 @@ const Message = () => {
         <hr />
       </div>
       <div className={styles.chatBox}>
-        <div className={styles.selectedUser}>
-          {selectedUser && <p>{selectedUser.username}</p>}
+
+      <div className={styles.selectedUser}>
+          {selectedUser && (
+            <>
+              {selectedUser.profilepic ? (
+                <img
+                  className={styles.profilepicc}
+                  src={selectedUser.profilepic}
+                  alt="User profile"
+                />
+              ) : (
+                <img
+                  className={styles.profilepicc}
+                  src="https://img.icons8.com/fluency/48/test-account.png"
+                  alt="Default profile"
+                />
+              )}
+              <span className={styles.username}>{selectedUser.username}</span>
+            </>
+          )}
         </div>
+
+        
         <div className={styles.chatContent}>
           <div className={styles.messages}>
             {messages.map((message, index) => (

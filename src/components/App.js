@@ -10,10 +10,10 @@ import UserProfile from "../pages/userprofile";
 import SearchComponent from "../pages/search";
 import Profile from "../pages/profile";
 import Message from "../pages/messages";
+import MessageList from "../pages/messageList";
 import {Route, Routes,useLocation} from 'react-router-dom';
 import styles from "../styles/app.module.css";
 import { logout } from '../actions/index';
-
 
 
 
@@ -86,8 +86,8 @@ const App = () => {
           {/* <Route path="/notifications" element={<Notifications />} /> */}
           <Route path="/create" element={<CreatePost />} />
           <Route path="/search" element={<SearchComponent />} />
-          <Route path="/messages" element={<Message />} />
-          <Route path="/messages/:userId" element={<Message />} />
+          <Route path="/messages" element={<MessageList />} />
+          <Route path="/messages/:conversationId" element={<Message />} />
           <Route
             path="/signin"
             element={<SigninForm />}

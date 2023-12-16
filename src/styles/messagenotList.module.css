@@ -1,36 +1,45 @@
 /* messages.module.css */
 
 .messageContainer {
-    display: flex;
-    flex-direction: row;
-  }
-  
-  .conversationList {
-    width: 200px;
-    border-right: 1px solid #ccc;
-    padding: 10px;
-  }
-  
-  .selectedUser {
-    background-color: gray;
-    padding: 10px;
-    font-weight: bold;
-  }
-  
-  .chatBox {
-    flex: 1;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 90vh; /* Set chat box height to fill the entire viewport height */
-  }
-  
-  .messages {
-    flex: 1;
-    overflow-y: auto; /* Allow vertical scrolling if messages exceed the container height */
-  }
-  
+  display: flex;
+  flex-direction: row;
+}
+
+.conversationList {
+  width: 200px;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+}
+
+.selectedUser {
+  background-color: gray;
+  padding: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center; /* Align items vertically in the selectedUser div */
+
+}
+
+.chatBox {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 90vh; /* Set chat box height to fill the entire viewport height */
+}
+
+.chatContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.profilepicc {
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+}
+
 .messageInput {
   display: flex;
   align-items: center;
@@ -51,14 +60,14 @@
 
 /* Send button */
 .messageInput button {
-  background-color: #4CAF50; /* Your desired color */ 
+  background-color: #4caf50; /* Your desired color */
   color: #fff;
   border: none;
   border-radius: 5px;
   padding: 8px 16px;
 }
 
-.messageInput button:hover{
+.messageInput button:hover {
   cursor: pointer;
   color: black;
 }
@@ -96,64 +105,7 @@
   color: black; /* A subtle color for the timestamp */
 }
 
-
-
-
-
-
-
-
-
-/* styles.module.css */
-
-.messageContainer {
-  display: flex;
-}
-
-.conversationList {
-  flex: 1;
-  padding: 20px;
-  background-color: #f0f0f0;
-}
-
 .username {
-  font-weight: bold;
+  margin-left: 20px;
   font-size: larger;
-}
-
-.messageContainer ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.messageContainer li {
-  margin-bottom: 10px;
-}
-
-.messageContainer a {
-  text-decoration: none;
-  color: #333;
-  display: flex;
-  align-items: center;
-}
-
-.messageContainer img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-
-
-.litag:hover{
-  background-color: lightgray;
-}
-
-
-.messageContent {
-  margin-top: 60px;
-  margin-left: -25px; 
-  font-size: 14px; 
-  color: #333;
 }

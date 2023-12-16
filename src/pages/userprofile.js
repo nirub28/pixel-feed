@@ -175,10 +175,10 @@ const UserProfile = () => {
   
   
 
-  const sendMessage = (userIdToSendMessage) => {
-    // Define your sendMessage logic here
-    // For example, you can open a messaging component or make an API call to start a conversation
-  };
+  // const sendMessage = (userIdToSendMessage) => {
+  //   // Define your sendMessage logic here
+  //   // For example, you can open a messaging component or make an API call to start a conversation
+  // };
 
   const openFollowersPopup = () => {
     setShowFollowersPopup(true);
@@ -247,10 +247,55 @@ const UserProfile = () => {
   // console.log("other user is", otherUser );
 
 
-  const handleSendMessage = (userId) => {
-    // Navigate to the messaging route with the recipient's user ID = 
-    window.location.href = `/messages/${userId}`;
+  // const handleSendMessage = (userId) => {
+  //   // Navigate to the messaging route with the recipient's user ID = 
+  //   window.location.href = `/messages/${userId}`;
+  // };
+
+  const handleSendMessage = async (userId) => {
+    try {
+      // Make an API call to check if a room exists for the two users
+      const response = await fetch(
+        `http://localhost:8000/message/check-room?user1=${user.id}&user2=${userId}`
+      );
+  
+      if (response.ok) {
+        const roomData = await response.json();
+  
+        // Check if a room exists
+        if (roomData.roomExists) {
+          // If the room exists, navigate to the messaging route with the room ID
+          window.location.href = `/messages/${roomData.roomId}`;
+        } else {
+          // If the room doesn't exist, make an API call to create a new room
+          const createRoomResponse = await fetch(
+            "http://localhost:8000/message/create-room",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ user1: user.id, user2: userId }),
+            }
+          );
+  
+          if (createRoomResponse.ok) {
+            const createdRoomData = await createRoomResponse.json();
+  
+            // Navigate to the messaging route with the newly created room ID
+            window.location.href = `/messages/${createdRoomData.roomId}`;
+          } else {
+            console.error("Error creating room:", createRoomResponse.status);
+          }
+        }
+      } else {
+        console.error("Error checking room:", response.status);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
   };
+  
 
 
 
