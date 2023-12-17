@@ -17,7 +17,7 @@ const MessageList = () => {
 
         if (response.ok) {
           const conversationData = await response.json();
-          console.log("data",conversationData);
+        //   console.log("data",conversationData);
           setConversations(conversationData);
         } else {
           console.error("Error fetching conversations:", response.status);

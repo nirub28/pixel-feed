@@ -1,45 +1,53 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-// import io from 'socket.io-client';
+// import {io} from 'socket.io-client';
 import styles from "../styles/messagenotList.module.css";
 
-// const socket = io('http://localhost:8000');
-
-
-const Message = () => {
+const Message = ({ socket }) => {
   const user = useSelector((state) => state.user.user);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const dispatch = useDispatch();
-  const { conversationId } = useParams(); 
+  // const dispatch = useDispatch();
+  const { conversationId } = useParams();
 
-const userId=user.id;
+  const userId = user.id;
 
-useEffect(() => {
-  const fetchConversationData = async () => {
+  useEffect(() => {
+    socket.emit("join_room", conversationId);
+
+    // Listen for new messages from the server
+    socket.on("newMessage", (messageData) => {
+      // Update the UI with the new message
+      setMessages((prevMessages) => [...prevMessages, messageData]);
+    });
+
+    return () => {
+      // Clean up the socket listener when the component unmounts
+      socket.off("newMessage");
+    };
+  }, [conversationId, socket]);
+
+  useEffect(() => {
+    const fetchConversationData = async () => {
       // Fetch conversation details based on conversationId
       await fetchConversationDetails(conversationId, userId);
       // Fetch messages for the conversation
       await fetchMessages(conversationId);
+    };
 
-  };
+    fetchConversationData();
+  }, [conversationId, userId]);
 
-  fetchConversationData();
-}, [conversationId, userId]);
-
-
-
-
-  const fetchConversationDetails = async (conversationId,userId) => {
+  const fetchConversationDetails = async (conversationId, userId) => {
     try {
       const response = await fetch(
         `http://localhost:8000/message/conversation-details/${conversationId}?userId=${userId}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -54,7 +62,6 @@ useEffect(() => {
   };
 
   const fetchMessages = async (conversationId) => {
-
     try {
       const response = await fetch(
         `http://localhost:8000/message/get-messages/${conversationId}`
@@ -68,9 +75,6 @@ useEffect(() => {
     }
   };
 
-
- 
-
   const handleSendMessage = () => {
     if (newMessage.trim() !== "") {
       // Make an API call to send the message
@@ -78,6 +82,7 @@ useEffect(() => {
         sender: user.id,
         room: conversationId,
         content: newMessage,
+        timestamp: new Date().toISOString(),
       };
 
       fetch("http://localhost:8000/message/send-message", {
@@ -90,23 +95,37 @@ useEffect(() => {
         .then((response) => {
           if (response.ok) {
             // Message sent successfully, you can update the conversation's messages
-            setMessages((prevMessages) => [...prevMessages, messageData]);
+            // setMessages((prevMessages) => [...prevMessages, messageData]);
 
             // Clear the new message input
             setNewMessage("");
-               
-             
             // Emit Socket.IO event to notify the server about the new message
-            // io.emit('newMessage', messageData);
+            socket.emit("newMessage", messageData);
           } else {
             console.error("Error sending message");
           }
         })
+
         .catch((error) => {
           console.error("Error sending message:", error);
         });
     }
   };
+
+  // const formatMessageDate = (timestamp) => {
+  //   const messageDate = new Date(timestamp);
+  //   const currentDate = new Date();
+  //   const yesterday = new Date(currentDate);
+  //   yesterday.setDate(currentDate.getDate() - 1);
+
+  //   if (messageDate.toDateString() === currentDate.toDateString()) {
+  //     return "Today";
+  //   } else if (messageDate.toDateString() === yesterday.toDateString()) {
+  //     return "Yesterday";
+  //   } else {
+  //     return messageDate.toLocaleDateString();
+  //   }
+  // };
 
   return (
     <div className={styles.messageContainer}>
@@ -117,8 +136,7 @@ useEffect(() => {
         <hr />
       </div>
       <div className={styles.chatBox}>
-
-      <div className={styles.selectedUser}>
+        <div className={styles.selectedUser}>
           {selectedUser && (
             <>
               {selectedUser.profilepic ? (
@@ -139,7 +157,6 @@ useEffect(() => {
           )}
         </div>
 
-        
         <div className={styles.chatContent}>
           <div className={styles.messages}>
             {messages.map((message, index) => (
@@ -152,15 +169,14 @@ useEffect(() => {
                 }`}
               >
                 {message.content}
-                <span className={styles.timestamp}>
-                  {new Date(message.timestamp).toLocaleString([], {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+                {message.timestamp && (
+                  <span className={styles.timestamp}>
+                    {new Date(message.timestamp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                )}
               </div>
             ))}
           </div>

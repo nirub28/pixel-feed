@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 
 import SignupForm from "../pages/sign-up";
 import SigninForm from "../pages/sign-in";
@@ -11,23 +11,20 @@ import SearchComponent from "../pages/search";
 import Profile from "../pages/profile";
 import Message from "../pages/messages";
 import MessageList from "../pages/messageList";
-import {Route, Routes,useLocation} from 'react-router-dom';
+import { Route, Routes, useLocation } from "react-router-dom";
 import styles from "../styles/app.module.css";
-import { logout } from '../actions/index';
-
-
-
+import { logout } from "../actions/index";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import io from "socket.io-client"; // Add this
+const socket = io("http://localhost:5000/");
 
 const App = () => {
   const user = useSelector((state) => state.user);
-  const location = useLocation(); 
+  const location = useLocation();
   const dispatch = useDispatch();
-
-
 
   const handleUserLogout = async () => {
     try {
@@ -39,7 +36,7 @@ const App = () => {
           // "Authorization": `Bearer ${accessToken}`,
         },
       });
-  
+
       if (response.ok) {
         // Session is successfully destroyed on the backend
         // Now, set the user to null in your state
@@ -54,10 +51,9 @@ const App = () => {
       console.error("Error while logging out:", error);
     }
   };
-  
 
-    // Determine whether to show the menu based on the current route
-    const showMenu =
+  // Determine whether to show the menu based on the current route
+  const showMenu =
     location.pathname !== "/signin" && location.pathname !== "/signup";
 
   return (
@@ -75,28 +71,25 @@ const App = () => {
         theme="dark"
       />
 
+      {showMenu && <Menu handleUserLogout={handleUserLogout} />}
 
-
-        {showMenu && <Menu  handleUserLogout={handleUserLogout} />}
-
-       <div className={styles.ContentContainer}>
+      <div className={styles.ContentContainer}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile  user={user} />} />
+          <Route path="/profile" element={<Profile user={user} />} />
           {/* <Route path="/notifications" element={<Notifications />} /> */}
           <Route path="/create" element={<CreatePost />} />
           <Route path="/search" element={<SearchComponent />} />
           <Route path="/messages" element={<MessageList />} />
-          <Route path="/messages/:conversationId" element={<Message />} />
           <Route
-            path="/signin"
-            element={<SigninForm />}
+            path="/messages/:conversationId"
+            element={<Message socket={socket} />}
           />
+          <Route path="/signin" element={<SigninForm />} />
           <Route path="/signup" element={<SignupForm />} />
           <Route path="/user/profile/:userid" element={<UserProfile />} />
         </Routes>
       </div>
-
 
       {/* {user ? (
         // If user is authenticated, display the Home component
@@ -105,9 +98,10 @@ const App = () => {
         // If user is not authenticated, display the SigninForm component
         <SigninForm handleUserLogin={handleUserLogin} />
       )} */}
-
     </div>
   );
 };
 
 export default App;
+
+// chat notification,date,time display, scroll to last
