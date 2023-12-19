@@ -11,6 +11,7 @@ import SearchComponent from "../pages/search";
 import Profile from "../pages/profile";
 import Message from "../pages/messages";
 import MessageList from "../pages/messageList";
+import Notification from "../pages/notification";
 import { Route, Routes, useLocation } from "react-router-dom";
 import styles from "../styles/app.module.css";
 import { logout } from "../actions/index";
@@ -77,7 +78,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile user={user} />} />
-          {/* <Route path="/notifications" element={<Notifications />} /> */}
+          <Route path="/notifications" element={<Notification />} />
           <Route path="/create" element={<CreatePost />} />
           <Route path="/search" element={<SearchComponent />} />
           <Route path="/messages" element={<MessageList />} />
@@ -104,4 +105,4 @@ const App = () => {
 
 export default App;
 
-// chat notification,date,time display, scroll to last
+// chat notification,

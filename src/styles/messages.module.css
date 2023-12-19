@@ -9,6 +9,7 @@
     width: 200px;
     border-right: 1px solid #ccc;
     padding: 10px;
+
   }
   
   .selectedUser {
@@ -24,11 +25,15 @@
     flex-direction: column;
     justify-content: space-between;
     height: 90vh; /* Set chat box height to fill the entire viewport height */
+    
   }
   
   .messages {
     flex: 1;
     overflow-y: auto; /* Allow vertical scrolling if messages exceed the container height */
+    display: flex;
+    flex-direction: column-reverse; /* Reverse the order of messages for better scrolling */
+    
   }
   
 .messageInput {
@@ -88,6 +93,7 @@
   margin: 10px 0; /* Add vertical margin to create separation between messages */
   clear: both; /* Ensure each message starts on a new line */
   max-width: 60%; /* Limit the message width to a percentage of the container */
+  
 }
 
 .timestamp {
@@ -108,12 +114,14 @@
 
 .messageContainer {
   display: flex;
+  
 }
 
 .conversationList {
   flex: 1;
   padding: 20px;
   background-color: #f0f0f0;
+  
 }
 
 .username {
@@ -156,6 +164,7 @@
   margin-left: -25px; 
   font-size: 14px; 
   color: #333;
+  
 }
 
 .dateContainer {
@@ -163,12 +172,17 @@
   justify-content: center;
 }
 
-.date {
-  background-color: gray;
+.date{
+  background-color: rgb(243, 26, 26);
   color: white;
   padding: 5px 10px;
   border-radius: 5px;
-  position: absolute;
-  margin-left: 100%;
-  
+  /* margin-left: -50%; */
+  align-self: center; 
 }
+.messageBubble {
+  margin: 5px 0; /* Adjust margin for better spacing between messages */
+  margin-top: 60px;
+
+}
+

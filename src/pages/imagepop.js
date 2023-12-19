@@ -45,7 +45,8 @@ const ImagePopup = ({ imageId, onClose }) => {
     } catch (error) {
       console.error("Error adding comment:", error);
     }
-  };
+    await sendNotification(post.user._id, "like");
+    };
 
   // Function to fetch and display comments
   const fetchAndDisplayComments = async () => {
@@ -206,7 +207,34 @@ const ImagePopup = ({ imageId, onClose }) => {
     } catch (error) {
       console.error("Error handling like:", error);
     }
+    await sendNotification(post.user._id, "comment");
   };
+
+
+
+
+
+
+  // Function to send a notification to the post owner
+const sendNotification = async (receiverId, type) => {
+  try {
+    await fetch("http://localhost:8000/notification/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        senderId: user.id,
+        receiverId,
+        type,
+        postId: post._id,
+      }),
+    });
+  } catch (error) {
+    console.error("Error sending notification:", error);
+  }
+};
+
 
   return (
     <div className={styles.imagePopupOverlay}>

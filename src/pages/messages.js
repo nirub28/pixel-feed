@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useRef} from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 // import {io} from 'socket.io-client';
@@ -11,6 +11,8 @@ const Message = ({ socket }) => {
   const [messages, setMessages] = useState([]);
   // const dispatch = useDispatch();
   const { conversationId } = useParams();
+  const scroll = useRef();
+
 
   const userId = user.id;
 
@@ -39,6 +41,12 @@ const Message = ({ socket }) => {
 
     fetchConversationData();
   }, [conversationId, userId]);
+
+  useEffect(() => {
+    // Scroll to the last message when messages change
+     scroll.current?.scrollIntoView({behavior:"auto"});
+  }, [messages]);
+
 
   const fetchConversationDetails = async (conversationId, userId) => {
     try {
@@ -112,20 +120,28 @@ const Message = ({ socket }) => {
     }
   };
 
-  // const formatMessageDate = (timestamp) => {
-  //   const messageDate = new Date(timestamp);
-  //   const currentDate = new Date();
-  //   const yesterday = new Date(currentDate);
-  //   yesterday.setDate(currentDate.getDate() - 1);
 
-  //   if (messageDate.toDateString() === currentDate.toDateString()) {
-  //     return "Today";
-  //   } else if (messageDate.toDateString() === yesterday.toDateString()) {
-  //     return "Yesterday";
-  //   } else {
-  //     return messageDate.toLocaleDateString();
-  //   }
-  // };
+  const formatDate = (timestamp) => {
+    const messageDate = new Date(timestamp);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    if (
+      messageDate.toDateString() === today.toDateString()
+    ) {
+      return "Today";
+    } else if (
+      messageDate.toDateString() === yesterday.toDateString()
+    ) {
+      return "Yesterday";
+    } else {
+      return messageDate.toLocaleDateString();
+    }
+  };
+
+
+ 
 
   return (
     <div className={styles.messageContainer}>
@@ -157,10 +173,18 @@ const Message = ({ socket }) => {
           )}
         </div>
 
-        <div className={styles.chatContent}>
+        <div className={styles.chatContent} >
           <div className={styles.messages}>
             {messages.map((message, index) => (
+              <div key={index} className={styles.message}>
+              {index === 0 || formatDate(message.timestamp) !== formatDate(messages[index - 1].timestamp) ? (
+                <div className={styles.dateContainer}>
+                <div className={styles.date}>{formatDate(message.timestamp)}</div>
+              </div>
+              ) : null}
+
               <div
+               ref={scroll}
                 key={index}
                 className={`${styles.message} ${
                   message.sender === user.id
@@ -177,6 +201,7 @@ const Message = ({ socket }) => {
                     })}
                   </span>
                 )}
+              </div>
               </div>
             ))}
           </div>
