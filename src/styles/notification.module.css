@@ -1,0 +1,43 @@
+/* notification.module.css */
+
+.notificationContainer {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .notificationItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .notificationContent {
+    margin-left: 10px;
+  }
+  
+  .notificationContent p {
+    margin: 0;
+  }
+  
+  .notificationProfilePic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .notificationUsername {
+    margin-top: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #3498db; /* Add your preferred color for links */
+  }
+  
+  /* Add additional styling based on your preferences */
+  

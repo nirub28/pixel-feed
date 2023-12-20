@@ -12,7 +12,7 @@ const ImagePopup = ({ imageId, onClose }) => {
   const [post, setPost] = useState(null);
   const [user, setUser] = useState({});
 
-  // console.log(user)
+  // console.log("user is",user);
 
   const [commentToDelete, setCommentToDelete] = useState(null);
 
@@ -45,7 +45,10 @@ const ImagePopup = ({ imageId, onClose }) => {
     } catch (error) {
       console.error("Error adding comment:", error);
     }
-    await sendNotification(post.user._id, "like");
+    
+    if(userhere.id !== user._id){
+      await sendNotification(user._id, "comment");
+    }
     };
 
   // Function to fetch and display comments
@@ -207,7 +210,9 @@ const ImagePopup = ({ imageId, onClose }) => {
     } catch (error) {
       console.error("Error handling like:", error);
     }
-    await sendNotification(post.user._id, "comment");
+    if(userhere.id !== user._id){
+      await sendNotification(user._id, "like");
+    }
   };
 
 
@@ -224,7 +229,7 @@ const sendNotification = async (receiverId, type) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        senderId: user.id,
+        senderId: userhere.id,
         receiverId,
         type,
         postId: post._id,
