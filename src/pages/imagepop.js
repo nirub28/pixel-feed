@@ -184,6 +184,7 @@ const ImagePopup = ({ imageId, onClose }) => {
   const handleLikeClick = async () => {
     try {
       // Send a POST request to the API endpoint to add or remove a like
+      var likeorunlike = 0;
       const response = await fetch(
         `http://localhost:8000/post/like/${imageId}`,
         {
@@ -204,13 +205,14 @@ const ImagePopup = ({ imageId, onClose }) => {
           count: updatedLikesData.count,
           likedByUser: updatedLikesData.users.includes(userhere.id),
         });
+        likeorunlike = updatedLikesData.likeorunlike;
       } else {
         console.error("Error handling like:", response.statusText);
       }
     } catch (error) {
       console.error("Error handling like:", error);
     }
-    if(userhere.id !== user._id){
+    if(userhere.id !== user._id && likeorunlike === -1){
       await sendNotification(user._id, "like");
     }
   };

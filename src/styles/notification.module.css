@@ -5,6 +5,7 @@
     margin: 0 auto;
     padding: 20px;
   }
+ 
   
   .notificationItem {
     display: flex;
@@ -15,6 +16,20 @@
     border-radius: 5px;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .notificationItem:hover{
+    background-color: lightgrey;
+  }
+
+  .div1{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+  }
+  .div1 >div{
+    margin-left: 20px;
   }
   
   .notificationContent {
@@ -38,6 +53,16 @@
     cursor: pointer;
     color: #3498db; /* Add your preferred color for links */
   }
+
   
-  /* Add additional styling based on your preferences */
   
+.smallimg{
+  width:100px;
+  height: 100px;
+  max-width: 100%; /* Ensures the image does not exceed its original size */
+  height: auto; /* Allows the image to maintain its aspect ratio */
+  display: block; /* Ensures the image behaves as a block element */
+  margin: 0 auto; /* Centers the image horizontally within its container */
+  margin-left: 200px;
+  cursor: pointer;
+} 
