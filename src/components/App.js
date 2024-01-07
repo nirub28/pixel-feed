@@ -105,4 +105,4 @@ const App = () => {
 
 export default App;
 
-// chat notification,
+// chat notification, blue tick, 

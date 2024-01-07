@@ -54,7 +54,12 @@
     color: #3498db; /* Add your preferred color for links */
   }
 
-  
+  .inndiv1{
+    width: 60%;
+  }
+  .inndiv2{
+    width: 40%;
+  }
   
 .smallimg{
   width:100px;
@@ -63,6 +68,16 @@
   height: auto; /* Allows the image to maintain its aspect ratio */
   display: block; /* Ensures the image behaves as a block element */
   margin: 0 auto; /* Centers the image horizontally within its container */
-  margin-left: 200px;
+  margin-left: 100px;
   cursor: pointer;
 } 
+.notibtn{
+  cursor: pointer;
+  width: 130px;
+  height: 30px;
+  margin-left: 500px;
+}
+.notibtn:hover{
+  background-color:lightslategray;
+  color: white;
+}

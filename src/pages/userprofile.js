@@ -47,6 +47,25 @@ const UserProfile = () => {
     }
   };
 
+   // Function to send a notification to the post owner
+const sendNotification = async (receiverId, type) => {
+  try {
+    await fetch("http://localhost:8000/notification/sendfollow", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        senderId: user.id,
+        receiverId,
+        type,
+      }),
+    });
+  } catch (error) {
+    console.error("Error sending notification:", error);
+  }
+};
+
   const followUser = async (userIdToFollow) => {
     try {
       // Make an API call to follow the user
@@ -66,12 +85,11 @@ const UserProfile = () => {
         // const / = await response.json();
         setIsFollowing(true);
 
-              // Fetch the updated follower and following counts
-              fetchFollowerAndFollowingCounts(userid);
+        fetchFollowerAndFollowingCounts(userid);
+          
+        await sendNotification(userid, "follow");
+        
 
-
-        // Add the followed user to the followersList
-        // setFollowersList([...followersList, userIdToFollow]);
       } else {
         // Handle the case where the API call fails
         console.error("Failed to follow user:", response.status);

@@ -9,8 +9,6 @@ const NotificationPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // console.log("not", notifications);
-
   useEffect(() => {
     // Fetch notifications for the logged-in user
     const fetchNotifications = async () => {
@@ -21,7 +19,7 @@ const NotificationPage = () => {
 
         if (response.ok) {
           const notificationData = await response.json();
-          console.log("not", notificationData);
+          // console.log("data",notificationData);
           setNotifications(notificationData);
         } else {
           console.error("Error fetching notifications:", response.status);
@@ -34,42 +32,37 @@ const NotificationPage = () => {
     fetchNotifications();
   }, [user.id]);
 
+  const deleteNotifications = async () => {
+    try {
+      console.log("making call");
+      const response = await fetch(
+        `http://localhost:8000/notification/delete-notifications/${user.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-
-
-  // Assume you have a function to make API calls, e.g., fetchNotifications or axios
-const deleteNotifications = async (userId) => {
-  try {
-    const response = await fetch(`http://localhost:8000/delete-notifications/${userId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.ok) {
-      console.log('Notifications deleted successfully');
-    } else {
-      console.error('Error deleting notifications:', response.statusText);
+      if (response.ok) {
+        console.log("Notifications deleted successfully");
+        // Update state to an empty array to clear notifications
+        setNotifications([]);
+      } else {
+        console.error("Error deleting notifications:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting notifications:", error);
     }
-  } catch (error) {
-    console.error('Error deleting notifications:', error);
-  }
-};
-
-const userId = user.id; 
-
-// Set a timer to delete notifications after 5 minutes
-setTimeout(() => {
-  deleteNotifications(userId);
-}, 5 * 60 * 1000); // 5 minutes in milliseconds
-
+  };
 
   return (
     <div className={styles.notificationContainer}>
       <h1>Notifications</h1>
+      <button className={styles.notibtn} onClick={deleteNotifications}>Clear Notifications</button>
       <ul>
-        {notifications.map((notification) => (
+        {notifications.reverse().map((notification) => (
           <li key={notification._id} className={styles.notificationItem}>
             <img
               src={
@@ -80,10 +73,9 @@ setTimeout(() => {
               className={styles.notificationProfilePic}
             />
             <div className={styles.notificationContent}>
-              {/* Customize the display based on the notification type */}
               {notification.type === "like" && (
                 <div className={styles.div1}>
-                  <div>
+                  <div className={styles.inndiv1}>
                     <span
                       className={styles.notificationUsername}
                       onClick={() => {
@@ -98,16 +90,20 @@ setTimeout(() => {
                     </span>{" "}
                     liked your post.
                   </div>
-                  <div onClick={() => setSelectedImage(notification.postId._id)}>
+                  <div className={styles.inndiv2}
+                    onClick={() => setSelectedImage(notification.postId._id)}
+                  >
                     <img
                       className={styles.smallimg}
                       src={notification.postId.image}
+                      alt="Sender Profile"
                     ></img>
                   </div>
                 </div>
               )}
               {notification.type === "comment" && (
-                <p>
+                <div className={styles.div1}>
+                  <div>
                   <span
                     className={styles.notificationUsername}
                     onClick={() => {
@@ -121,7 +117,36 @@ setTimeout(() => {
                     {notification.sender.username}
                   </span>{" "}
                   commented on your post.
-                </p>
+                </div>
+                <div
+                    onClick={() => setSelectedImage(notification.postId._id)}
+                  >
+                    <img
+                      className={styles.smallimg}
+                      src={notification.postId.image}
+                      alt="Sender Profile"
+                    ></img>
+                  </div>
+                </div>
+              )}
+              {notification.type === "follow" && (
+                <div className={styles.div1}>
+                  <div>
+                    <span
+                      className={styles.notificationUsername}
+                      onClick={() => {
+                        const profileRedirectUrl =
+                          notification.sender._id === user.id
+                            ? `/profile`
+                            : `/user/profile/${notification.sender._id}`;
+                        window.location.href = profileRedirectUrl;
+                      }}
+                    >
+                      {notification.sender.username}
+                    </span>{" "}
+                    followed you.
+                  </div>
+                </div>
               )}
             </div>
           </li>
