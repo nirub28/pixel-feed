@@ -13,6 +13,7 @@ const Profile = () => {
   const [showFollowersPopup, setShowFollowersPopup] = useState(false);
   const [showFollowingPopup, setShowFollowingPopup] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false); //showProfileEdit state
+  const [ShowProfileSettings,setShowProfileSettings]=useState(false);
   const [followersListDetails, setFollowersList] = useState([]);
   const [followingListDetails, setFollowingList] = useState([]);
   const [postList, setPostList] = useState([]);
@@ -52,10 +53,18 @@ const Profile = () => {
     setShowProfileEdit(true);
   };
 
+  const openProfileSettings = () =>{
+    setShowProfileSettings(true);
+  }
+
   // Function to handle closing the profile edit form
   const closeProfileEdit = () => {
     setShowProfileEdit(false);
   };
+
+  const closeSettingsProfileEdit = () =>{
+    setShowProfileSettings(false);
+  }
 
   const handleFileInputChange = (e) => {
     e.stopPropagation();
@@ -205,7 +214,13 @@ const Profile = () => {
         <button className={styles.editProfileButton} onClick={openProfileEdit}>
           Edit Profile
         </button>
+        
       </div>
+      <img src="https://as2.ftcdn.net/v2/jpg/01/13/94/83/1000_F_113948390_gRY4UwSTxm2bNX8jD2oIjpEuwJPELTTr.jpg" 
+          alt="Default"
+          className={styles.settingsIcon}
+          onClick={openProfileSettings}
+        />
       <div className={styles.userDetails}>
         <p className={styles.userStats}>
           <span>
@@ -313,6 +328,24 @@ const Profile = () => {
           </div>
         </div>
       )}
+
+      { ShowProfileSettings && (
+         <div className={styles.settingsPopupContainer}>
+          <p><a className={styles.atagbluetick}
+           href="/bluetick"
+          >Buy Bluetick</a></p>
+          <div className={styles.line}></div>
+          <p>Change Password</p>
+          <div className={styles.line}></div>
+          <p>Settings & Privacy</p>
+          <div className={styles.line}></div>
+          <p>Log Out</p>
+          <div className={styles.line}></div>
+          <p className={styles.closeBtnOfSettings} onClick={closeSettingsProfileEdit}>
+           Cancel
+          </p>
+           
+        </div>) }
 
       {showProfileEdit && (
         // Profile edit form

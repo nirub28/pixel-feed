@@ -12,11 +12,14 @@ import Profile from "../pages/profile";
 import Message from "../pages/messages";
 import MessageList from "../pages/messageList";
 import Notification from "../pages/notification";
+import BlueTick from "../pages/bluetick";
 import { Route, Routes, useLocation } from "react-router-dom";
 import styles from "../styles/app.module.css";
 import { logout } from "../actions/index";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
+
+// import Test from "../pages/test";
 import "react-toastify/dist/ReactToastify.css";
 
 import io from "socket.io-client"; // Add this
@@ -82,6 +85,7 @@ const App = () => {
           <Route path="/create" element={<CreatePost />} />
           <Route path="/search" element={<SearchComponent />} />
           <Route path="/messages" element={<MessageList />} />
+          <Route path="/bluetick" element={<BlueTick />} />
           <Route
             path="/messages/:conversationId"
             element={<Message socket={socket} />}
